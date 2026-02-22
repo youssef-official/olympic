@@ -3,84 +3,86 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from './components/Navbar';
 import HomePage from './pages/HomePage';
 import AIChatPage from './pages/AIChatPage';
+import ResearchPage from './pages/ResearchPage';
 import AdminDashboard from './pages/AdminDashboard';
-import { PageType } from './types';
-import { useLanguage } from './contexts/LanguageContext';
+import { ThemeProvider } from './contexts/ThemeContext';
+import { LanguageProvider } from './contexts/LanguageContext';
+
+type PageType = 'home' | 'ai-chat' | 'research' | 'admin';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<PageType>('home');
-  const { t, lang } = useLanguage();
+  const [searchQuery, setSearchQuery] = useState('');
 
   const handleSearch = (query: string) => {
-    console.log('Searching for:', query);
-    // In a real app, this would navigate to a results page
-    alert(`Searching for: ${query}`);
+    setSearchQuery(query);
+    setCurrentPage('research');
+  };
+
+  const navigateTo = (page: PageType) => {
+    setCurrentPage(page);
   };
 
   return (
-    <div className={`min-h-screen flex flex-col ${lang === 'ar' ? 'font-sans' : 'font-sans'}`} dir={lang === 'ar' ? 'rtl' : 'ltr'}>
-      <Navbar setCurrentPage={setCurrentPage} />
+    <ThemeProvider>
+      <LanguageProvider>
+        <div className="min-h-screen bg-white dark:bg-neutral-950 transition-colors duration-300">
+          <Navbar 
+            onNavigate={navigateTo} 
+            currentPage={currentPage} 
+          />
+          
+          <main>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentPage}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+              >
+                {currentPage === 'home' && (
+                  <HomePage onSearch={handleSearch} />
+                )}
+                
+                {currentPage === 'ai-chat' && (
+                  <AIChatPage />
+                )}
 
-      <main className="flex-1">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentPage}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.4, ease: "easeInOut" }}
-          >
-            {currentPage === 'home' && (
-              <HomePage 
-                onSearch={handleSearch} 
-                onAIMode={() => setCurrentPage('ai')} 
-              />
-            )}
-            
-            {currentPage === 'ai' && (
-              <AIChatPage onBack={() => setCurrentPage('home')} />
-            )}
+                {currentPage === 'research' && (
+                  <ResearchPage 
+                    query={searchQuery} 
+                    onBack={() => setCurrentPage('home')} 
+                  />
+                )}
 
-            {currentPage === 'admin' && (
-              <AdminDashboard onLogout={() => setCurrentPage('home')} />
-            )}
+                {currentPage === 'admin' && (
+                  <AdminDashboard />
+                )}
+              </motion.div>
+            </AnimatePresence>
+          </main>
 
-            {currentPage === 'about' && (
-              <div className="pt-32 px-6 max-w-4xl mx-auto text-center">
-                <h1 className="text-5xl font-serif font-bold mb-8">About VIVORA</h1>
-                <p className="text-xl text-stone-600 dark:text-stone-400 leading-relaxed">
-                  VIVORA is a premium search experience designed for the modern era. 
-                  Combining elite design aesthetics with cutting-edge AI technology, 
-                  we provide a portal to the world's information that is as beautiful as it is functional.
-                </p>
-                <button 
-                  onClick={() => setCurrentPage('home')}
-                  className="mt-12 text-accent font-bold hover:underline"
-                >
-                  Back to Search
-                </button>
+          {/* Footer - Only show on home */}
+          {currentPage === 'home' && (
+            <footer className="py-8 border-t border-gray-100 dark:border-neutral-900">
+              <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+                <div className="flex gap-6">
+                  <a href="#" className="hover:underline">About</a>
+                  <a href="#" className="hover:underline">Advertising</a>
+                  <a href="#" className="hover:underline">Business</a>
+                  <a href="#" className="hover:underline">How Search works</a>
+                </div>
+                <div className="flex gap-6">
+                  <a href="#" className="hover:underline">Privacy</a>
+                  <a href="#" className="hover:underline">Terms</a>
+                  <a href="#" className="hover:underline">Settings</a>
+                </div>
               </div>
-            )}
-          </motion.div>
-        </AnimatePresence>
-      </main>
-
-      {currentPage === 'home' && (
-        <footer className="bg-stone-50 dark:bg-neutral-900 border-t border-stone-200 dark:border-neutral-800 py-4 px-8">
-          <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-stone-500">
-            <div className="flex items-center gap-6">
-              <a href="#" className="hover:underline">Advertising</a>
-              <a href="#" className="hover:underline">Business</a>
-              <a href="#" className="hover:underline">How Search works</a>
-            </div>
-            <div className="flex items-center gap-6">
-              <a href="#" className="hover:underline">{t('footerPrivacy')}</a>
-              <a href="#" className="hover:underline">{t('footerTerms')}</a>
-              <a href="#" className="hover:underline">{t('footerSettings')}</a>
-            </div>
-          </div>
-        </footer>
-      )}
-    </div>
+            </footer>
+          )}
+        </div>
+      </LanguageProvider>
+    </ThemeProvider>
   );
 }
