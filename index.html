@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VIVORA Search | Premium AI Portal</title>
+  <link rel="icon" href="data:," />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'DM Sans', 'sans-serif'],
+            serif: ['Playfair Display', 'Cormorant Garamond', 'serif'],
+          },
+          colors: {
+            accent: '#B8860B', // Classic Gold
+          }
+        }
+      }
+    }
+  </script>
+  <script src="https://www.vivorax.online/branding.js" defer></script>
+</head>
+<body class="antialiased bg-white text-gray-900 dark:bg-neutral-950 dark:text-stone-100 transition-colors duration-500">
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+</html>
